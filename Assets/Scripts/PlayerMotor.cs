@@ -5,10 +5,14 @@ using UnityEngine;
 public class PlayerMotor : MonoBehaviour
 {
     private const float LANE_DISTANCE = 3.0f;
+    private const float TURN_SPEED = 0.05f;
 
+    // Animation
+    private Animator anim;
+    
     // Movment
     private CharacterController controller;
-    private float jumpForce = 4.0f;
+    private float jumpForce = 7.0f;
     private float gravity = 12.0f; 
     private float verticalVelocity;
     private float speed = 7.0f;
@@ -17,6 +21,7 @@ public class PlayerMotor : MonoBehaviour
     private void Start()
     {
         controller = GetComponent<CharacterController>();
+        anim = GetComponent<Animator>();
     }
 
     private void Update()
@@ -45,13 +50,52 @@ public class PlayerMotor : MonoBehaviour
         // Move Delta
         Vector3 moveVector = Vector3.zero;
         moveVector.x = (targetPostion - transform.position).normalized.x * speed;
-        moveVector.y = -0.1f;
+
+        bool isGrounded = IsGrounded();
+        
+        // Calcualte Y
+        if (IsGrounded())
+        {
+            // if grounded{
+            verticalVelocity = -0.1f;
+            anim.SetBool("Grounded", isGrounded);
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                // Jump
+                anim.SetTrigger("Jump");
+                verticalVelocity = jumpForce;
+            }
+        }
+        else
+        {
+            verticalVelocity -= (gravity * Time.deltaTime);
+
+            // FAST FALL
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                verticalVelocity = -jumpForce;
+
+            }
+        }
+        moveVector.y = verticalVelocity;
         moveVector.z = speed;
 
         // Move the Penguin
         controller.Move(moveVector * Time.deltaTime);
 
-        Debug.Log(desiredLane);
+        //Debug.Log(desiredLane);
+
+        //Rotate the player in the dir they move
+        Vector3 dir = controller.velocity;
+        if (dir != Vector3.zero)
+        {
+            dir.y = 0;
+            transform.forward = Vector3.Lerp(transform.forward, dir, TURN_SPEED);
+        }
+        
+
 
     }
 
@@ -62,6 +106,18 @@ public class PlayerMotor : MonoBehaviour
 
     }
 
+    private bool IsGrounded()
+    {
+        Ray groundRay = new Ray(
+            new Vector3(
+                controller.bounds.center.x,
+                (controller.bounds.center.y - controller.bounds.extents.y) + 0.2f,
+                controller.bounds.center.z),
+            Vector3.down);
+        Debug.DrawRay(groundRay.origin, groundRay.direction, Color.cyan, 1.0f);
 
+        return Physics.Raycast(groundRay, 0.2f + 0.1f);
+        
+    }
 
 }
