@@ -7,6 +7,9 @@ public class PlayerMotor : MonoBehaviour
     private const float LANE_DISTANCE = 3.0f;
     private const float TURN_SPEED = 0.05f;
 
+    //Function
+    private bool isRunning = false;
+
     // Animation
     private Animator anim;
     
@@ -26,16 +29,19 @@ public class PlayerMotor : MonoBehaviour
 
     private void Update()
     {
-        // Gather the inputs on which lanw
-        if (Input.GetKeyUp(KeyCode.LeftArrow))
+        if(!isRunning)
         {
+            return;
+        }
+        
+        //Gather inputs on which lane we should be
+        //Move Left
+        if (MobileInputs.Instance.SwipeLeft)
             MoveLane(false);
-        }
 
-        if (Input.GetKeyUp(KeyCode.RightArrow))
-        {
+        //Move Right
+        if (MobileInputs.Instance.SwipeRight)
             MoveLane(true);
-        }
 
         //Calculate where we should be in future
         Vector3 targetPostion = transform.position.z * Vector3.forward;
@@ -60,7 +66,7 @@ public class PlayerMotor : MonoBehaviour
             verticalVelocity = -0.1f;
             anim.SetBool("Grounded", isGrounded);
 
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (MobileInputs.Instance.SwipeUp)
             {
                 // Jump
                 anim.SetTrigger("Jump");
@@ -73,7 +79,7 @@ public class PlayerMotor : MonoBehaviour
 
             // FAST FALL
 
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (MobileInputs.Instance.SwipeDown)
             {
                 verticalVelocity = -jumpForce;
 
@@ -118,6 +124,11 @@ public class PlayerMotor : MonoBehaviour
 
         return Physics.Raycast(groundRay, 0.2f + 0.1f);
         
+    }
+
+    public void StartRunning()
+    {
+        isRunning = true;
     }
 
 }
