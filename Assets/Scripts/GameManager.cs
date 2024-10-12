@@ -53,8 +53,31 @@ public class GameManager : MonoBehaviour
 
     public void UpdateScore()
     {
-        scoreText.text = score.ToString();
-        coinText.text = coinScore.ToString();
-        modifierText.text = modifierScore.ToString();
+        //scoreText.text = score.ToString();
+       // coinText.text = coinScore.ToString();
+       // modifierText.text = modifierScore.ToString();
+    }
+
+    public void OnDeath()
+    {/*
+        IsDead = true;
+        deadCoinText.text = score.ToString("0");
+        deadScoreText.text = coinScore.ToString("0");
+
+        deathMenuAnim.SetTrigger("Dead");
+
+        FindObjectOfType<GlacierSpawner>().IsScrolling = false;
+
+        gameCanvasAnim.SetTrigger("Hide");
+
+        // Check if this is a highscore
+        if (score > PlayerPrefs.GetInt("Highscore"))
+        {
+            float s = score;
+            if (s % 1 == 0)
+                s++;
+
+            PlayerPrefs.SetInt("Highscore", (int)s);
+        }*/
     }
 }

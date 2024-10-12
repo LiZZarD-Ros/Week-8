@@ -71,6 +71,10 @@ public class PlayerMotor : MonoBehaviour
                 // Jump
                 anim.SetTrigger("Jump");
                 verticalVelocity = jumpForce;
+            }else if (MobileInputs.Instance.SwipeDown)
+            {
+                StartSliding();
+                Invoke("StopSliding", 1.0f);
             }
         }
         else
@@ -129,6 +133,45 @@ public class PlayerMotor : MonoBehaviour
     public void StartRunning()
     {
         isRunning = true;
+        anim.SetTrigger("Startrunning");
+    }
+
+    private void StartSliding()
+    {
+        anim.SetBool("Sliding", true);
+        controller.height /= 2;
+        controller.center = new Vector3(controller.center.x, controller.center.y / 2, controller.center.z);
+    }
+
+    private void StopSliding()
+    {
+        anim.SetBool("Sliding", false);
+        controller.height *= 2;
+        controller.center = new Vector3(controller.center.x, controller.center.y * 2, controller.center.z);
+    }
+
+    /*private void Crash()
+    {
+        anim.SetTrigger("Death");
+        isRunning = false;
+        GameManager.Instance.OnDeath();
+    }*/
+
+    private void Crash()
+    {
+        anim.SetTrigger("Death");
+        isRunning = false;
+        //GameManager.Instance.OnDeath();
+    }
+
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        switch (hit.gameObject.tag)
+        {
+            case "Obstacle":
+                Crash();
+                break;
+        }
     }
 
 }
