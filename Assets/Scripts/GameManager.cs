@@ -5,23 +5,31 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+
+    private const int COIN_SCORE_AMOUNT = 5;
+
     public static GameManager Instance { set; get; }
+
+    public bool IsDead { set; get; }
 
     private bool isGameStarted = false;
     private PlayerMotor motor;
 
     //UI and UI fields
-    //public Animator gameCanvasAnim;
+    public Animator gameCanvasAnim;
     public Text scoreText, coinText, modifierText, highscoreText;
     private float score, coinScore, modifierScore;
     private int lastScore;
 
+    // Death Menu
+    public Animator deathMenuAnim;
+    public Text deadScoreText, deadCoinText;
+
     private void Awake()
     {
         Instance = this;
-        UpdateScore();
         motor = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMotor>();
-        //modifierScore = 1;
+        modifierScore = 1;
 
         //highscoreText.text = PlayerPrefs.GetInt("Highscore").ToString();
     }
@@ -34,12 +42,12 @@ public class GameManager : MonoBehaviour
             motor.StartRunning();
 
             //FindObjectOfType<GlacierSpawner>().IsScrolling = true;
-           //FindObjectOfType<CameraMotor>().IsMoving = true;
+            //FindObjectOfType<CameraMotor>().IsMoving = true;
 
-           // gameCanvasAnim.SetTrigger("Show");
+            //gameCanvasAnim.SetTrigger("Show");
         }
 
-        /*if (isGameStarted && !IsDead)
+        if (isGameStarted && !IsDead)
         {
             //Increase score
             score += (Time.deltaTime * modifierScore);
@@ -48,25 +56,38 @@ public class GameManager : MonoBehaviour
                 lastScore = (int)score;
                 scoreText.text = score.ToString("0");
             }
-        }*/
+        }
     }
 
-    public void UpdateScore()
+    public void GetCoin()
     {
-        //scoreText.text = score.ToString();
-       // coinText.text = coinScore.ToString();
-       // modifierText.text = modifierScore.ToString();
+        coinScore++;
+        score += COIN_SCORE_AMOUNT;
+        coinText.text = coinScore.ToString("0");
+        scoreText.text = score.ToString("0");
+    }
+
+    public void UpdateModifier(float modifierAmount)
+    {
+        modifierScore = 1.0f + modifierAmount;
+
+        modifierText.text = "x" + modifierScore.ToString("0.0");
+    }
+
+    public void OnPlayButton()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Game");
     }
 
     public void OnDeath()
-    {/*
+    {
         IsDead = true;
         deadCoinText.text = score.ToString("0");
         deadScoreText.text = coinScore.ToString("0");
 
         deathMenuAnim.SetTrigger("Dead");
 
-        FindObjectOfType<GlacierSpawner>().IsScrolling = false;
+        //FindObjectOfType<GlacierSpawner>().IsScrolling = false;
 
         gameCanvasAnim.SetTrigger("Hide");
 
@@ -78,6 +99,7 @@ public class GameManager : MonoBehaviour
                 s++;
 
             PlayerPrefs.SetInt("Highscore", (int)s);
-        }*/
+        }
     }
+
 }
