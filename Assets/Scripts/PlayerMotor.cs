@@ -166,19 +166,13 @@ public class PlayerMotor : MonoBehaviour
         controller.height *= 2;
         controller.center = new Vector3(controller.center.x, controller.center.y * 2, controller.center.z);
     }
-
-    /*private void Crash()
-    {
-        anim.SetTrigger("Death");
-        isRunning = false;
-        GameManager.Instance.OnDeath();
-    }*/
+      
 
     private void Crash()
     {
         anim.SetTrigger("Death");
         isRunning = false;
-        //GameManager.Instance.OnDeath();
+        GameManager.Instance.OnDeath();
     }
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
