@@ -41,10 +41,10 @@ public class GameManager : MonoBehaviour
             isGameStarted = true;
             motor.StartRunning();
 
-            //FindObjectOfType<GlacierSpawner>().IsScrolling = true;
-            //FindObjectOfType<CameraMotor>().IsMoving = true;
+            FindObjectOfType<GlacierSpawner>().IsScrolling = true;
+            FindObjectOfType<CameraMotor>().IsMoving = true;
 
-            //gameCanvasAnim.SetTrigger("Show");
+            gameCanvasAnim.SetTrigger("Show");
         }
 
         if (isGameStarted && !IsDead)
@@ -87,7 +87,7 @@ public class GameManager : MonoBehaviour
 
         deathMenuAnim.SetTrigger("Dead");
 
-        //FindObjectOfType<GlacierSpawner>().IsScrolling = false;
+        FindObjectOfType<GlacierSpawner>().IsScrolling = false;
 
         gameCanvasAnim.SetTrigger("Hide");
 
