@@ -5,17 +5,17 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-
     private const int COIN_SCORE_AMOUNT = 5;
 
     public static GameManager Instance { set; get; }
 
     public bool IsDead { set; get; }
 
-    private bool isGameStarted = false;
+    // Keep this false until a material is chosen
+    public bool isGameStarted = false;
     private PlayerMotor motor;
 
-    //UI and UI fields
+    // UI and UI fields
     public Animator gameCanvasAnim, menuAnim, coinPop;
     public Text scoreText, coinText, modifierText, highscoreText;
     private float score, coinScore, modifierScore;
@@ -30,27 +30,20 @@ public class GameManager : MonoBehaviour
         Instance = this;
         motor = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMotor>();
         modifierScore = 1;
-
         highscoreText.text = PlayerPrefs.GetInt("Highscore").ToString();
     }
 
     private void Update()
     {
+        // Only start the game after material is selected
         if (MobileInputs.Instance.Tap && !isGameStarted)
         {
-            isGameStarted = true;
-            motor.StartRunning();
-
-            FindObjectOfType<GlacierSpawner>().IsScrolling = true;
-            FindObjectOfType<CameraMotor>().IsMoving = true;
-
-            gameCanvasAnim.SetTrigger("Show");
-            menuAnim.SetTrigger("Hide");
+            return; // Don't start the game until material is selected
         }
 
         if (isGameStarted && !IsDead)
         {
-            //Increase score
+            // Increase score
             score += (Time.deltaTime * modifierScore);
             if (lastScore != (int)score)
             {
@@ -58,6 +51,19 @@ public class GameManager : MonoBehaviour
                 scoreText.text = score.ToString("0");
             }
         }
+    }
+
+    // Method to trigger game start after material selection
+    public void StartGameAfterMaterialSelection()
+    {
+        isGameStarted = true;
+        motor.StartRunning();
+
+        FindObjectOfType<GlacierSpawner>().IsScrolling = true;
+        FindObjectOfType<CameraMotor>().IsMoving = true;
+
+        gameCanvasAnim.SetTrigger("Show");
+        menuAnim.SetTrigger("Hide");
     }
 
     public void GetCoin()
@@ -72,7 +78,6 @@ public class GameManager : MonoBehaviour
     public void UpdateModifier(float modifierAmount)
     {
         modifierScore = 1.0f + modifierAmount;
-
         modifierText.text = "x" + modifierScore.ToString("0.0");
     }
 
@@ -103,5 +108,4 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetInt("Highscore", (int)s);
         }
     }
-
 }
