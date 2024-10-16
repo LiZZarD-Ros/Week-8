@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     private PlayerMotor motor;
 
     //UI and UI fields
-    public Animator gameCanvasAnim;
+    public Animator gameCanvasAnim, menuAnim, coinPop;
     public Text scoreText, coinText, modifierText, highscoreText;
     private float score, coinScore, modifierScore;
     private int lastScore;
@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour
             FindObjectOfType<CameraMotor>().IsMoving = true;
 
             gameCanvasAnim.SetTrigger("Show");
+            menuAnim.SetTrigger("Hide");
         }
 
         if (isGameStarted && !IsDead)
@@ -61,6 +62,7 @@ public class GameManager : MonoBehaviour
 
     public void GetCoin()
     {
+        coinPop.SetTrigger("Collect");
         coinScore++;
         score += COIN_SCORE_AMOUNT;
         coinText.text = coinScore.ToString("0");
