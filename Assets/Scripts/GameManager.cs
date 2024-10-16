@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
         motor = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMotor>();
         modifierScore = 1;
 
-        //highscoreText.text = PlayerPrefs.GetInt("Highscore").ToString();
+        highscoreText.text = PlayerPrefs.GetInt("Highscore").ToString();
     }
 
     private void Update()
