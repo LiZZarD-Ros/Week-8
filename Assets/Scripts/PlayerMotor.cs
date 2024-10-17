@@ -28,11 +28,16 @@ public class PlayerMotor : MonoBehaviour
     private float speedIncreaseDelay = 2.5f;
     private float speedIncreaseAmount = 0.1f;
 
+    //SFX
+    public AudioClip jumpSound;
+    private AudioSource playerAudio;
+
 
     private void Start()
     {
         controller = GetComponent<CharacterController>();
         anim = GetComponent<Animator>();
+        playerAudio = GetComponent<AudioSource>();
     }
 
     private void Update()
@@ -88,7 +93,9 @@ public class PlayerMotor : MonoBehaviour
                 // Jump
                 anim.SetTrigger("Jump");
                 verticalVelocity = jumpForce;
-            }else if (MobileInputs.Instance.SwipeDown)
+                playerAudio.PlayOneShot(jumpSound);
+            }
+            else if (MobileInputs.Instance.SwipeDown)
             {
                 StartSliding();
                 Invoke("StopSliding", 1.0f);

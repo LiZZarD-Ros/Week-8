@@ -28,6 +28,12 @@ public class GameManager : MonoBehaviour
     public Animator deathMenuAnim;
     public Text deadScoreText, deadCoinText;
 
+    //SFX
+    public AudioClip coinSound;
+    private AudioSource playerAudio;
+    public AudioClip deathSound;
+    public GameObject musicGameObject;
+
     private void Awake()
     {
         Instance = this;
@@ -62,6 +68,7 @@ public class GameManager : MonoBehaviour
                 scoreText.text = score.ToString("0");
             }
         }
+        playerAudio = GetComponent<AudioSource>();
     }
 
     // Method to trigger game start after material selection
@@ -88,6 +95,8 @@ public class GameManager : MonoBehaviour
 
         // Save updated coinScore to PlayerPrefs
         PlayerPrefs.SetInt("CoinScore", coinScore);
+
+        playerAudio.PlayOneShot(coinSound);
     }
 
     public void UpdateModifier(float modifierAmount)
@@ -104,6 +113,8 @@ public class GameManager : MonoBehaviour
     public void OnDeath()
     {
         IsDead = true;
+        playerAudio.PlayOneShot(deathSound);
+        musicGameObject.SetActive(false);
         deadCoinText.text = score.ToString("0");
         deadScoreText.text = coinScore.ToString("0");
 
