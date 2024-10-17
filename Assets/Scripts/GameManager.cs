@@ -1,11 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     private const int COIN_SCORE_AMOUNT = 5;
+    private const int DAILY_REWARD_AMOUNT = 15; // Amount of coins rewarded
+    private const string LAST_REWARD_TIME_KEY = "LastRewardTime"; // PlayerPrefs key for saving last reward time
 
     public static GameManager Instance { set; get; }
 
@@ -17,9 +18,11 @@ public class GameManager : MonoBehaviour
 
     // UI and UI fields
     public Animator gameCanvasAnim, menuAnim, coinPop;
-    public Text scoreText, coinText, modifierText, highscoreText;
-    private float score, coinScore, modifierScore;
+    public Text scoreText, coinText, modifierText, highscoreText, coinTextMain;
+    public Button dailyRewardButton; // The daily reward button
+    private float score, modifierScore;
     private int lastScore;
+    private int coinScore;
 
     // Death Menu
     public Animator deathMenuAnim;
@@ -31,6 +34,14 @@ public class GameManager : MonoBehaviour
         motor = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMotor>();
         modifierScore = 1;
         highscoreText.text = PlayerPrefs.GetInt("Highscore").ToString();
+
+        // Load coinScore from PlayerPrefs
+        coinScore = PlayerPrefs.GetInt("CoinScore", 0); // Default to 0 if no saved score
+        coinText.text = coinScore.ToString("0"); // Update UI with the saved coinScore
+        coinTextMain.text = coinScore.ToString("0");
+
+        // Check if daily reward button should be enabled
+        CheckDailyRewardAvailability();
     }
 
     private void Update()
@@ -69,10 +80,14 @@ public class GameManager : MonoBehaviour
     public void GetCoin()
     {
         coinPop.SetTrigger("Collect");
-        coinScore++;
+        coinScore++; // Increase the coin score
         score += COIN_SCORE_AMOUNT;
         coinText.text = coinScore.ToString("0");
+        coinTextMain.text = coinScore.ToString("0");
         scoreText.text = score.ToString("0");
+
+        // Save updated coinScore to PlayerPrefs
+        PlayerPrefs.SetInt("CoinScore", coinScore);
     }
 
     public void UpdateModifier(float modifierAmount)
@@ -107,5 +122,49 @@ public class GameManager : MonoBehaviour
 
             PlayerPrefs.SetInt("Highscore", (int)s);
         }
+    }
+
+    // Method to check if the daily reward can be claimed
+    private void CheckDailyRewardAvailability()
+    {
+        string lastRewardTimeString = PlayerPrefs.GetString(LAST_REWARD_TIME_KEY, string.Empty);
+
+        if (!string.IsNullOrEmpty(lastRewardTimeString))
+        {
+            DateTime lastRewardTime = DateTime.Parse(lastRewardTimeString);
+            TimeSpan timeSinceLastReward = DateTime.Now - lastRewardTime;
+
+            if (timeSinceLastReward.TotalHours >= 24)
+            {
+                // 24 hours have passed, enable the button
+                dailyRewardButton.interactable = true;
+            }
+            else
+            {
+                // Less than 24 hours have passed, disable the button
+                dailyRewardButton.interactable = false;
+            }
+        }
+        else
+        {
+            // No reward has been claimed yet, enable the button
+            dailyRewardButton.interactable = true;
+        }
+    }
+
+    // Method to claim the daily reward
+    public void ClaimDailyReward()
+    {
+        // Add 15 coins to the coin score
+        coinScore += DAILY_REWARD_AMOUNT;
+        coinText.text = coinScore.ToString("0");
+        coinTextMain.text = coinScore.ToString("0");
+
+        // Save the updated coin score and the current time
+        PlayerPrefs.SetInt("CoinScore", coinScore);
+        PlayerPrefs.SetString(LAST_REWARD_TIME_KEY, DateTime.Now.ToString());
+
+        // Disable the button until 24 hours have passed
+        dailyRewardButton.interactable = false;
     }
 }
