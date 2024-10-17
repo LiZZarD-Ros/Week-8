@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;  // Import SceneManagement
 
 public class ResetPlayerPrefs : MonoBehaviour
 {
@@ -12,11 +13,14 @@ public class ResetPlayerPrefs : MonoBehaviour
         resetButton.onClick.AddListener(ResetPrefs);
     }
 
-    // Method to reset PlayerPrefs
+    // Method to reset PlayerPrefs and reload the scene
     void ResetPrefs()
     {
         PlayerPrefs.DeleteAll();
         PlayerPrefs.Save();
         Debug.Log("PlayerPrefs have been reset.");
+
+        // Reload the current scene
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
